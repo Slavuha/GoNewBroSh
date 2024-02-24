@@ -1,10 +1,13 @@
 package com.shpp.p2p.cs.vmazur.assignment4;
 
+import acm.graphics.GOval;
 import acm.graphics.GRect;
+import acm.util.RandomGenerator;
 import com.shpp.cs.a.graphics.WindowProgram;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+
 
 public class Breakout extends WindowProgram {
     /** Width and height of application window in pixels */
@@ -43,10 +46,54 @@ public class Breakout extends WindowProgram {
     /** Number of turns */
     private static final int NTURNS = 3;
 
+    private static final int PAUSE = 1000/48;
+    int countOfTurns = NTURNS;
+     //   Speed of the ball
+
+    private double vx = 1;
+    private double vy = 3;
+
     public void run() {
+        setSize(APPLICATION_WIDTH,APPLICATION_HEIGHT);
         createPaddle();
         addMouseListeners();
+        createBall();
+        random();
+        while (countOfTurns>0){
+            moveBall();
+        }
 
+    }
+    private void random(){
+        RandomGenerator rgen = RandomGenerator.getInstance();
+        vx = rgen.nextDouble(1.0, 3.0);
+        if (rgen.nextBoolean(0.5))
+            vx = -vx;
+    }
+
+    private void moveBall() {
+        checkCoordinate();
+        gOval.move(vx, vy);
+        pause(PAUSE);
+    }
+
+    private void checkCoordinate() {
+        if  (gOval.getY()>(getHeight()-BALL_RADIUS) ||gOval.getY()<0){
+            vy = - vy;
+        }
+        else if (gOval.getX()<0|| gOval.getX()>(getWidth()-BALL_RADIUS)) {
+            vx = -vx;
+        }}
+
+    GOval gOval;
+    private void createBall() {
+        gOval = new GOval(
+                getWidth()/2 - BALL_RADIUS/2,
+                getHeight()/2 - BALL_RADIUS/2,
+                BALL_RADIUS, BALL_RADIUS);
+        gOval.setFilled(true);
+        gOval.setFillColor(Color.PINK);
+        add(gOval);
     }
 
 
