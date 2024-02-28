@@ -1,5 +1,6 @@
 package com.shpp.p2p.cs.vmazur.assignment4;
 
+import acm.graphics.GObject;
 import acm.graphics.GOval;
 import acm.graphics.GRect;
 import acm.util.RandomGenerator;
@@ -55,6 +56,7 @@ public class Breakout extends WindowProgram {
 
     public void run() {
         setSize(APPLICATION_WIDTH,APPLICATION_HEIGHT);
+        //Bro need add additional random. Do not forget.
         createPaddle();
         addMouseListeners();
         createBall();
@@ -73,45 +75,86 @@ public class Breakout extends WindowProgram {
 
     private void moveBall() {
         checkCoordinate();
-        gOval.move(vx, vy);
+        checkCollidingObject();
+        ball.move(vx, vy);
         pause(PAUSE);
     }
 
+    private void checkCollidingObject() {
+        GObject collider = getCollidingObject();
+        if (collider==paddle){
+            vy=-vy;
+        }
+    }
+
+    private GObject getCollidingObject() {
+    int x =0;
+    int y =0;
+
+        GObject gObject = getElementAt(ball.getX(), ball.getY());
+
+        if (gObject != null){
+            return gObject;
+        }  else if (gObject == null){
+            y = y + BALL_RADIUS;
+            gObject = getElementAt(ball.getX(), (ball.getY()+y));
+            y = 0;
+        }
+        else if (gObject == null){
+            x = x + BALL_RADIUS;
+            gObject = getElementAt(ball.getX() + x, ball.getY());
+            x = 0;
+        }
+        else if (gObject == null){
+            x = x + BALL_RADIUS;
+            y = y + BALL_RADIUS;
+
+            gObject = getElementAt(ball.getX() + x, ball.getY() + y);
+            x = 0;
+            y = 0;
+        }
+
+
+
+        return gObject;
+
+    }
+
     private void checkCoordinate() {
-        if  (gOval.getY()>(getHeight()-BALL_RADIUS) ||gOval.getY()<0){
+        if  (ball.getY()>(getHeight()-BALL_RADIUS) || ball.getY()<0){
             vy = - vy;
         }
-        else if (gOval.getX()<0|| gOval.getX()>(getWidth()-BALL_RADIUS)) {
+        else if (ball.getX()<0|| ball.getX()>(getWidth()-BALL_RADIUS)) {
             vx = -vx;
         }}
 
-    GOval gOval;
+    GOval ball;
     private void createBall() {
-        gOval = new GOval(
+        ball = new GOval(
                 getWidth()/2 - BALL_RADIUS/2,
                 getHeight()/2 - BALL_RADIUS/2,
                 BALL_RADIUS, BALL_RADIUS);
-        gOval.setFilled(true);
-        gOval.setFillColor(Color.PINK);
-        add(gOval);
+        ball.setFilled(true);
+        ball.setFillColor(Color.PINK);
+        add(ball);
     }
 
 
-    GRect gRect;
+    GRect paddle;
 
     /**
      * Method creates paddle in place regards to task requirements.
      */
     private void createPaddle() {
-         gRect = new GRect(
+         paddle = new GRect(
                 getWidth()/2 - PADDLE_WIDTH/2,
                 getHeight()-PADDLE_Y_OFFSET,
                 PADDLE_WIDTH,
                 PADDLE_HEIGHT
         );
-        gRect.setFilled(true);
-        gRect.setFillColor(Color.green);
-        add(gRect);
+        paddle.setFilled(true);
+        paddle.setFillColor(Color.green);
+        add(paddle);
     }
 
     /**
@@ -130,8 +173,8 @@ public class Breakout extends WindowProgram {
         }
         else {paddleX = mouseEvent.getX()-PADDLE_WIDTH/2.00;}
 
-        gRect.setLocation(paddleX,paddleY);
-        add(gRect);
+        paddle.setLocation(paddleX,paddleY);
+        add(paddle);
     }
 }
 
