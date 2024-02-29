@@ -37,7 +37,7 @@ public class Breakout extends WindowProgram {
 
     /** Height of a brick */
     private static final int BRICK_HEIGHT = 8;
-
+    private static final int BRICK_WIDTH = 30;
     /** Radius of the ball in pixels */
     private static final int BALL_RADIUS = 10;
 
@@ -56,16 +56,44 @@ public class Breakout extends WindowProgram {
 
     public void run() {
         setSize(APPLICATION_WIDTH,APPLICATION_HEIGHT);
-        //Bro need add additional random. Do not forget.
         createPaddle();
         addMouseListeners();
         createBall();
         random();
+        createBricks();
         while (countOfTurns>0){
             moveBall();
         }
 
     }
+
+    private void createBricks() {
+        for (int i = 0; i<NBRICK_ROWS; i++){
+            createRowOfBricks();
+        }
+
+    }
+    int counterOfBricks = 0;
+    private void createRowOfBricks() {
+
+
+        for (int i = 0; i<NBRICKS_PER_ROW; i++){
+            createBrick();
+            counterOfBricks++;
+        }
+    }
+
+    private void createBrick() {
+        GRect gRect = new GRect(
+                0,
+                BRICK_Y_OFFSET,
+                BRICK_WIDTH,
+                BRICK_HEIGHT
+        );
+        gRect.setFilled(true);
+
+    }
+
     private void random(){
         RandomGenerator rgen = RandomGenerator.getInstance();
         vx = rgen.nextDouble(1.0, 3.0);
@@ -121,9 +149,19 @@ public class Breakout extends WindowProgram {
     }
 
     private void checkCoordinate() {
-        if  (ball.getY()>(getHeight()-BALL_RADIUS) || ball.getY()<0){
+        if  (ball.getY()<0){
             vy = - vy;
+        }else if (ball.getY()>(getHeight()-BALL_RADIUS)){
+            countOfTurns--;
+            waitForClick();
+            ball.setLocation(getWidth()/2 - BALL_RADIUS/2,
+                    getHeight()/2 - BALL_RADIUS/2);
+            random();
+
+
         }
+
+
         else if (ball.getX()<0|| ball.getX()>(getWidth()-BALL_RADIUS)) {
             vx = -vx;
         }}
