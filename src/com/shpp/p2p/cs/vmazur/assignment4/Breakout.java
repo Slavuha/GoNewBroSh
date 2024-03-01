@@ -37,7 +37,7 @@ public class Breakout extends WindowProgram {
 
     /** Height of a brick */
     private static final int BRICK_HEIGHT = 8;
-    private static final int BRICK_WIDTH = 30;
+    private static final int BRICK_WIDTH = 35;
     /** Radius of the ball in pixels */
     private static final int BALL_RADIUS = 10;
 
@@ -68,30 +68,50 @@ public class Breakout extends WindowProgram {
     }
 
     private void createBricks() {
+        int y = 0;
         for (int i = 0; i<NBRICK_ROWS; i++){
-            createRowOfBricks();
+            createRowOfBricks(y);
+            y = y + BRICK_HEIGHT + BRICK_SEP;
         }
 
     }
     int counterOfBricks = 0;
-    private void createRowOfBricks() {
-
+    private void createRowOfBricks(int y) {
+        int x = 0;
 
         for (int i = 0; i<NBRICKS_PER_ROW; i++){
-            createBrick();
+            createBrick(x, y);
+            x = x + BRICK_WIDTH + BRICK_SEP;
             counterOfBricks++;
         }
     }
 
-    private void createBrick() {
+    private void createBrick(int x, int y) {
         GRect gRect = new GRect(
-                0,
-                BRICK_Y_OFFSET,
+                0 + x,
+                BRICK_Y_OFFSET + y,
                 BRICK_WIDTH,
                 BRICK_HEIGHT
         );
         gRect.setFilled(true);
+        color(gRect);
+        add(gRect);
+    }
 
+    private void color(GRect gRect) {
+        if (counterOfBricks < 2 * NBRICKS_PER_ROW) {
+            gRect.setColor(Color.RED);
+        } else if (counterOfBricks < 4 * NBRICKS_PER_ROW) {
+            gRect.setColor(Color.ORANGE);
+        } else if (counterOfBricks < 6 * NBRICKS_PER_ROW) {
+            gRect.setColor(Color.YELLOW);
+
+        } else if (counterOfBricks < 8 * NBRICKS_PER_ROW) {
+            gRect.setColor(Color.GREEN);
+
+        } else if (counterOfBricks < 10 * NBRICKS_PER_ROW) {
+            gRect.setColor(Color.CYAN);
+        }
     }
 
     private void random(){
