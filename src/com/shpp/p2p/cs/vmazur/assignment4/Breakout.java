@@ -23,7 +23,7 @@ public class Breakout extends WindowProgram {
     private static final int PADDLE_Y_OFFSET = 30;
 
     /** Number of bricks per row */
-    private static final int NBRICKS_PER_ROW = 10;
+    private static final int NBRICKS_PER_ROW = 1;
 
     /** Number of rows of bricks */
     private static final int NBRICK_ROWS = 10;
@@ -32,12 +32,15 @@ public class Breakout extends WindowProgram {
     private static final int BRICK_SEP = 4;
 
     /** It's a bad idea to calculate brick width from APPLICATION_WIDTH */
-    // private static final int BRICK_WIDTH =
+   //  private static final int BRICK_WIDTH =
     //        (APPLICATION_WIDTH - (NBRICKS_PER_ROW - 1) * BRICK_SEP) / NBRICKS_PER_ROW;
 
     /** Height of a brick */
     private static final int BRICK_HEIGHT = 8;
-    private static final int BRICK_WIDTH = 35;
+
+    private static final int APP_WIDTH_CAPACITY = APPLICATION_WIDTH - BRICK_SEP;
+    private static final int BRICK_WIDTH = APP_WIDTH_CAPACITY / (NBRICKS_PER_ROW) - BRICK_SEP;
+            //35;
     /** Radius of the ball in pixels */
     private static final int BALL_RADIUS = 10;
 
@@ -52,9 +55,10 @@ public class Breakout extends WindowProgram {
      //   Speed of the ball
 
     private double vx = 1;
-    private double vy = 3;
-
+    private double vy = 9;
+    int countOfLeftBricks = NBRICKS_PER_ROW * NBRICK_ROWS;
     public void run() {
+
         setSize(APPLICATION_WIDTH,APPLICATION_HEIGHT);
         createPaddle();
         addMouseListeners();
@@ -63,6 +67,9 @@ public class Breakout extends WindowProgram {
         createBricks();
         while (countOfTurns>0){
             moveBall();
+            if (countOfLeftBricks==0){
+                break;
+            }
         }
 
     }
@@ -88,7 +95,7 @@ public class Breakout extends WindowProgram {
 
     private void createBrick(int x, int y) {
         GRect gRect = new GRect(
-                0 + x,
+                x,
                 BRICK_Y_OFFSET + y,
                 BRICK_WIDTH,
                 BRICK_HEIGHT
@@ -133,6 +140,13 @@ public class Breakout extends WindowProgram {
         if (collider==paddle){
             vy=-vy;
         }
+        else if (collider!=null){
+            remove(collider);
+            countOfLeftBricks--;
+            vy = -vy;
+
+        }
+
     }
 
     private GObject getCollidingObject() {
