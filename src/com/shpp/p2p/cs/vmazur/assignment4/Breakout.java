@@ -1,5 +1,6 @@
 package com.shpp.p2p.cs.vmazur.assignment4;
 
+import acm.graphics.GLabel;
 import acm.graphics.GObject;
 import acm.graphics.GOval;
 import acm.graphics.GRect;
@@ -23,7 +24,7 @@ public class Breakout extends WindowProgram {
     private static final int PADDLE_Y_OFFSET = 30;
 
     /** Number of bricks per row */
-    private static final int NBRICKS_PER_ROW = 1;
+    private static final int NBRICKS_PER_ROW = 10;
 
     /** Number of rows of bricks */
     private static final int NBRICK_ROWS = 10;
@@ -31,16 +32,15 @@ public class Breakout extends WindowProgram {
     /** Separation between bricks */
     private static final int BRICK_SEP = 4;
 
-    /** It's a bad idea to calculate brick width from APPLICATION_WIDTH */
-   //  private static final int BRICK_WIDTH =
-    //        (APPLICATION_WIDTH - (NBRICKS_PER_ROW - 1) * BRICK_SEP) / NBRICKS_PER_ROW;
-
-    /** Height of a brick */
+        /** Height of a brick */
     private static final int BRICK_HEIGHT = 8;
 
-    private static final int APP_WIDTH_CAPACITY = APPLICATION_WIDTH - BRICK_SEP;
-    private static final int BRICK_WIDTH = APP_WIDTH_CAPACITY / (NBRICKS_PER_ROW) - BRICK_SEP;
-            //35;
+        /** Capacity of weight pixels which we can use for calculate bricks weight.*/
+    private static final int APP_WIDTH_CAPACITY = APPLICATION_WIDTH - (BRICK_SEP*(NBRICKS_PER_ROW+2));
+
+    /** Weight of a brick */
+    private static final int BRICK_WIDTH = APP_WIDTH_CAPACITY / (NBRICKS_PER_ROW);
+
     /** Radius of the ball in pixels */
     private static final int BALL_RADIUS = 10;
 
@@ -49,13 +49,13 @@ public class Breakout extends WindowProgram {
 
     /** Number of turns */
     private static final int NTURNS = 3;
-
-    private static final int PAUSE = 1000/48;
+    /** Number of turns with  I could change) */
     int countOfTurns = NTURNS;
-     //   Speed of the ball
 
+    /**   Speed of the ball */
     private double vx = 1;
-    private double vy = 9;
+    private double vy = 3;
+    /** Count of left bricks on canvas */
     int countOfLeftBricks = NBRICKS_PER_ROW * NBRICK_ROWS;
     public void run() {
 
@@ -68,31 +68,60 @@ public class Breakout extends WindowProgram {
         while (countOfTurns>0){
             moveBall();
             if (countOfLeftBricks==0){
+                createWinLabel();
                 break;
             }
         }
-
     }
 
+    /**
+     * Method create win label if user win
+     */
+    private void createWinLabel() {
+
+        GLabel label = new GLabel("You win!!!");
+        label.setColor(Color.PINK);
+        label.setFont(new Font("Veranda", Font.PLAIN, 44));
+        label.setLocation(
+                getWidth() / 2 - label.getWidth() / 2,
+                getHeight() / 2);
+        add(label);
+    }
+/**
+Method creates bricks on canvas.
+ */
     private void createBricks() {
-        int y = 0;
+        int y = 0; //I added variable for controlee correct place of bricks.
         for (int i = 0; i<NBRICK_ROWS; i++){
             createRowOfBricks(y);
             y = y + BRICK_HEIGHT + BRICK_SEP;
         }
 
     }
+    /**
+     * I added variable to calculate count for bricks to controlee color of bricks.
+    */
     int counterOfBricks = 0;
+
+    /**
+     * Method creates row of bricks
+     * @param y from perviouse method to controlee y coordinate
+     */
     private void createRowOfBricks(int y) {
-        int x = 0;
+        int x = 0;//I added variable for controlee correct place of bricks.
 
         for (int i = 0; i<NBRICKS_PER_ROW; i++){
             createBrick(x, y);
             x = x + BRICK_WIDTH + BRICK_SEP;
-            counterOfBricks++;
+            counterOfBricks++;//Here I added counter to regulate color or bricks.
         }
     }
 
+    /**
+     * Method creates simple brick in write place.
+     * @param x
+     * @param y
+     */
     private void createBrick(int x, int y) {
         GRect gRect = new GRect(
                 x,
@@ -129,10 +158,12 @@ public class Breakout extends WindowProgram {
     }
 
     private void moveBall() {
+           // Pause between move
+         int pause = 1000/48;
         checkCoordinate();
         checkCollidingObject();
         ball.move(vx, vy);
-        pause(PAUSE);
+        pause(pause);
     }
 
     private void checkCollidingObject() {
